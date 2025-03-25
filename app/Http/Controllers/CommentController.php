@@ -7,6 +7,7 @@ use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\Gate;
 
 class CommentController extends Controller implements HasMiddleware
 {
@@ -20,10 +21,10 @@ class CommentController extends Controller implements HasMiddleware
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index($post_id)
     {
-        $posts = Post::with('comments')->get();
-        return $posts;
+        $post = Post::with('comments')->find($post_id);
+        return $post;
     }
 
     /**
@@ -48,15 +49,26 @@ class CommentController extends Controller implements HasMiddleware
      */
     public function show(Comment $comment)
     {
-        return $comment;
+        //
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Comment $comment)
+    public function update(Request $request, Post $post, Comment $comment)
     {
-        //
+        // if ($comment->post_id !== $post->id) {
+        //     return ['message' => 'Comment does not belong to this post.'];
+        // }
+
+        Gate::authorize('modify', $comment);
+        $fields = $request->validate([
+            'content' => 'required|string',
+        ]);
+
+        $comment->update($fields);
+
+        return $comment;
     }
 
     /**
