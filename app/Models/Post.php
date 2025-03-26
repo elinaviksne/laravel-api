@@ -9,7 +9,12 @@ class Post extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'body', 'user_id'];
+    protected $fillable = ['title', 'body', 'user_id', 'status_id'];
+
+    public function getIsPrivateAttribute()
+    {
+        return $this->status->name === PostStatus::STATUS_PRIVATE;
+    }
 
     public function user()
     {
@@ -19,5 +24,10 @@ class Post extends Model
     public function comments()
     {
         return $this->hasMany(Comment::class);
+    }
+
+    public function status()
+    {
+        return $this->belongsTo(PostStatus::class);
     }
 }

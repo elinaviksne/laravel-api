@@ -34,6 +34,7 @@ class PostController extends Controller implements HasMiddleware
         $fields = $request->validate([
             'title' => 'required|max:255',
             'body' => 'required',
+            'status_id' => 'required|exists:post_statuses,id',
         ]);
 
         // $fields['user_id'] = Auth::id();
@@ -60,7 +61,8 @@ class PostController extends Controller implements HasMiddleware
         Gate::authorize('modify', $post);
         $fields = $request->validate([
             'title' => 'required|max:255',
-            'body' => 'required'
+            'body' => 'required',
+            'status_id' => 'required|exists:post_statuses,id',
         ]);
 
         $post->update($fields);
