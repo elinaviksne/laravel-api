@@ -74,8 +74,16 @@ class CommentController extends Controller implements HasMiddleware
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Comment $comment)
+    public function destroy(Post $post, Comment $comment)
     {
-        //
+        if ($comment->post_id !== $post->id) {
+            return ['message' => 'This comment does not belong to this post.'];
+        }
+
+        Gate::authorize('delete', [$comment, $post]);
+
+        $comment->delete();
+
+        return ['message' => "The comment ($comment->id) has been deleted!"];
     }
 }
